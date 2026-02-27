@@ -36,6 +36,8 @@ export default async function SearchResultPage({ params }: Props) {
             </main>
         );
     }
+    const basic = idData.basic;
+    const imgUrl = basic?.character_image;
 
     if (!idData?.ocid) {
         return (
@@ -63,6 +65,23 @@ export default async function SearchResultPage({ params }: Props) {
             <h1>검색 결과</h1>
             <p>닉네임: <b>{name}</b></p>
             <p>ocid: <b>{idData.ocid}</b></p>
+            {imgUrl} ? (
+                    <div style={{ marginTop: 16 }}>
+                        <img
+                            src={imgUrl}
+                            alt="캐릭터 이미지"
+                            style={{
+                                width: 180,
+                                height: 180,
+                                imageRendering: "pixelated",
+                                border: "1px solid #e5e7eb",
+                                borderRadius: 12,
+                                background: "#fff",
+                            }}
+                        />
+                    </div>
+                )
+
 
             <h2 style={{ marginTop: 16 }}>기본 정보</h2>
             <pre style={{ marginTop: 8, whiteSpace: "pre-wrap" }}>
