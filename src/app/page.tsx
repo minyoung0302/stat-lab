@@ -17,7 +17,7 @@ export default function Home() {
       return;
     }
     setError('');
-    router.push(`/search?q=${encodeURIComponent(q)}`);
+    router.push(`/${q.trim()}`);
   };
   return (
       <main style={styles.main}>
