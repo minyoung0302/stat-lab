@@ -69,7 +69,7 @@ export default async function SearchResultPage({ params }: Props) {
                     <div style={{ marginTop: 16 }}>
                         <img
                             src={imgUrl}
-                            alt="캐릭터 이미지"
+                            alt=""
                             style={{
                                 width: 180,
                                 height: 180,
