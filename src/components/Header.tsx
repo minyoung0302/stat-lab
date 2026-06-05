@@ -2,20 +2,16 @@
 
 import Link from "next/link";
 import {useRouter} from "next/navigation";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 
 export default function Header() {
     const router = useRouter();
-    const [q, setQ] = useState(() => {
-        if (typeof window === "undefined") return "";
-        return localStorage.getItem("ms_name") || "";
-    });
+    const [q, setQ] = useState("");
 
     const goSearch = () => {
         const name = q.trim();
         if(!name) return;
-        localStorage.setItem("ms_name", name);
-        router.push(`/${name}`);
+        router.push(`/${encodeURIComponent(name)}`);
     };
 
     return (
@@ -37,7 +33,7 @@ export default function Header() {
                             href={q ? `/union?name=${encodeURIComponent(q)}` : "/union"}
                             style={styles.link}
                         >
-                            유니온
+                            유니온 챔피언
                         </Link>
 
                         <Link

@@ -1,0 +1,962 @@
+.page {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.contentGrid {
+    display: grid;
+    grid-template-columns: minmax(340px, 380px) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+}
+
+.leftColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 0;
+}
+
+.card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: clamp(12px, 4%, 18px);
+    box-sizing: border-box;
+    padding: clamp(14px, 4%, 20px);
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+    width: 100%;
+}
+
+.imageFrame {
+    display: grid;
+    place-items: center;
+    width: clamp(120px, 42%, 160px);
+    aspect-ratio: 1;
+    flex: 0 0 auto;
+    overflow: hidden;
+    border: none;
+    border-radius: 8px;
+    background: none;
+}
+
+.image {
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    object-fit: contain;
+    transform: translateY(-18%) scale(3.6);
+    transform-origin: center;
+}
+
+.name {
+    margin: 0;
+    font-size: clamp(17px, 5vw, 20px);
+    font-weight: bold;
+}
+
+.nameRow {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.titleBlock {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.worldTag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    padding-top: 1px;
+}
+
+.worldBadge {
+    display: inline-grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.worldName {
+    font-weight: 700;
+    font-size: 13px;
+    color: #374151;
+}
+
+.summary {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0;
+    margin: 0;
+    color: #6b7280;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.summary span {
+    display: inline-flex;
+    align-items: center;
+}
+
+.summary span + span::before {
+    content: "|";
+    margin: 0 7px;
+    color: #d1d5db;
+}
+
+.guildName {
+    display: inline-flex;
+    align-items: center;
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.guildName::before {
+    content: "";
+    width: 1px;
+    height: 12px;
+    margin-right: 6px;
+    background: #d1d5db;
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.info p {
+    margin: 0;
+}
+
+.section {
+    min-width: 0;
+}
+
+.sectionTitle {
+    margin: 0 0 12px;
+    font-size: 20px;
+}
+
+.tabList {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.tabButton {
+    padding: 10px 12px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.tabButtonActive {
+    border-bottom-color: #111827;
+    color: #111827;
+}
+
+.tabPanelStack {
+    display: grid;
+    gap: 20px;
+}
+
+.details {
+    box-sizing: border-box;
+    margin: 0;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #ffffff;
+}
+
+.detailRow {
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr);
+    border-top: 1px solid #e5e7eb;
+}
+
+.detailRow:first-child {
+    border-top: 0;
+}
+
+.detailKey,
+.detailValue {
+    margin: 0;
+    padding: 10px 12px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.detailKey {
+    font-weight: 700;
+    color: #374151;
+    background: #f9fafb;
+    border-right: 1px solid #e5e7eb;
+}
+
+.detailValue {
+    color: #111827;
+    overflow-wrap: anywhere;
+}
+
+.compactGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+.compactCard {
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.compactIconBox {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    background: #f9fafb;
+}
+
+.compactIcon {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+.compactTitle {
+    display: block;
+    margin-bottom: 8px;
+    color: #111827;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.compactDetails {
+    display: grid;
+    gap: 4px;
+    margin: 0;
+}
+
+.compactRow {
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr);
+    gap: 8px;
+    color: #6b7280;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.compactRow dt,
+.compactRow dd {
+    margin: 0;
+}
+
+.compactRow dt {
+    font-weight: 700;
+    color: #4b5563;
+}
+
+.compactRow dd {
+    overflow-wrap: anywhere;
+}
+
+.symbolGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.symbolItem {
+    position: relative;
+    display: grid;
+    justify-items: center;
+}
+
+.symbolIconBox {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 64px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #f9fafb;
+}
+
+.symbolIcon {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+.symbolLevel {
+    margin-top: 2px;
+    color: #374151;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+}
+
+.symbolTooltip {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 8px);
+    z-index: 10;
+    display: none;
+    min-width: 130px;
+    padding: 8px 10px;
+    border: 1px solid #111827;
+    border-radius: 8px;
+    background: #111827;
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16);
+    transform: translateX(-50%);
+}
+
+.symbolTooltip strong,
+.symbolTooltip span {
+    display: block;
+    white-space: nowrap;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.symbolTooltip span {
+    color: #d1d5db;
+}
+
+.symbolIconBox:hover .symbolTooltip {
+    display: block;
+}
+
+.linkTooltip {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 8px);
+    z-index: 10;
+    display: none;
+    width: 240px;
+    padding: 8px 10px;
+    border: 1px solid #111827;
+    border-radius: 8px;
+    background: #111827;
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16);
+    transform: translateX(-50%);
+}
+
+.linkTooltip strong,
+.linkTooltip span {
+    display: block;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.linkTooltip strong {
+    margin-bottom: 4px;
+}
+
+.linkTooltip span {
+    color: #d1d5db;
+    white-space: normal;
+}
+
+.symbolIconBox:hover .linkTooltip {
+    display: block;
+}
+
+.equipmentGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 12px;
+}
+
+.equipmentCard {
+    position: relative;
+    display: flex;
+    gap: 12px;
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+    outline: none;
+}
+
+.equipmentCard:hover,
+.equipmentCard:focus-visible {
+    border-color: #9ca3af;
+}
+
+.equipmentIconBox {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    flex: 0 0 auto;
+    border-radius: 8px;
+    background: #f9fafb;
+}
+
+.equipmentIcon {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+.unionList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+}
+
+.unionCard {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.unionImageBox {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    flex: 0 0 auto;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #f9fafb;
+}
+
+.unionImage {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+.unionInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.unionNameRow {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.unionNameRow strong {
+    color: #111827;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.unionNameRow span,
+.unionInfo p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.unionSlot {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 auto;
+    border-radius: 8px;
+    background: #111827;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.unionBadgeList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-width: 0;
+}
+
+.unionBadge {
+    max-width: 100%;
+    padding: 4px 7px;
+    border: 1px solid #dbeafe;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+.equipmentInfo {
+    min-width: 0;
+}
+
+.equipmentHeader {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.equipmentSlot {
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.equipmentName {
+    color: #111827;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.equipmentTooltip {
+    position: absolute;
+    left: 72px;
+    top: 10px;
+    z-index: 30;
+    display: none;
+    width: min(342px, calc(100vw - 48px));
+    max-height: min(720px, calc(100vh - 40px));
+    overflow: auto;
+    padding: 10px 14px 12px;
+    border: 1px solid #8b949e;
+    border-radius: 0 0 8px 8px;
+    background: #262626;
+    color: #f5f5f5;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.42);
+}
+
+.equipmentCard:hover .equipmentTooltip,
+.equipmentCard:focus-visible .equipmentTooltip,
+.equipmentCard:focus-within .equipmentTooltip {
+    display: block;
+}
+
+.equipmentTooltipTitle {
+    display: grid;
+    gap: 3px;
+    padding-bottom: 9px;
+    text-align: center;
+}
+
+.equipmentTooltipTitle strong {
+    color: #ffffff;
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+.equipmentTooltipTitle span {
+    color: #cbd5e1;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.equipmentTooltipHero {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+    padding: 10px 0;
+    border-top: 1px dashed #56616d;
+    border-bottom: 1px dashed #56616d;
+}
+
+.equipmentTooltipIconBox {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border: 2px solid #1fb896;
+    border-radius: 4px;
+    background: #53626a;
+}
+
+.equipmentTooltipIcon {
+    width: 46px;
+    height: 46px;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+.equipmentTooltipMeta {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+}
+
+.equipmentTooltipMeta span {
+    color: #d1d5db;
+    font-size: 12px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+.equipmentTooltipMeta strong {
+    color: #ffd900;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.equipmentTooltipStars {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    column-gap: 8px;
+    row-gap: 2px;
+    width: calc((5em + 4px) * 3 + 16px);
+    max-width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+    margin-bottom: 5px;
+    color: #ffd900;
+    font-size: 12px;
+    letter-spacing: 0;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+}
+
+.equipmentTooltipStarGroup {
+    display: inline-flex;
+    gap: 1px;
+    width: calc(5em + 4px);
+    justify-content: center;
+}
+
+.equipmentTooltipEmptyStars {
+    color: #6f7b84;
+}
+
+.equipmentTooltipDescription {
+    margin: 10px 0 0;
+    color: #cbd5e1;
+    font-size: 12px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.equipmentTooltipSection {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed #56616d;
+}
+
+.equipmentTooltipSection h3 {
+    margin: 0 0 7px;
+    color: #f9fafb;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.equipmentTooltipStats {
+    display: grid;
+    gap: 3px;
+    margin: 0;
+}
+
+.equipmentTooltipCategory,
+.equipmentTooltipRecovery {
+    margin: 0;
+    color: #ffffff;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.equipmentTooltipRecovery {
+    color: #ffd900;
+}
+
+.equipmentTooltipGameStats {
+    display: grid;
+    gap: 2px;
+    margin: 0;
+}
+
+.equipmentTooltipGameStats div {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px;
+    min-width: 0;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.equipmentTooltipGameStats dt,
+.equipmentTooltipGameStats dd {
+    margin: 0;
+}
+
+.equipmentTooltipGameStats dt {
+    color: #55f7ff;
+}
+
+.equipmentTooltipGameStats dd {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    color: #ffffff;
+}
+
+.equipmentTooltipGameStats strong {
+    color: #55f7ff;
+    font-weight: 700;
+}
+
+.equipmentTooltipAdd {
+    color: #f3f700;
+}
+
+.equipmentTooltipEtc {
+    color: #b69cff;
+}
+
+.equipmentTooltipStarforce {
+    color: #ffd21f;
+}
+
+.equipmentTooltipStats div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    min-width: 0;
+    color: #93c5fd;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.equipmentTooltipStats dt,
+.equipmentTooltipStats dd {
+    margin: 0;
+}
+
+.equipmentTooltipStats dt {
+    overflow-wrap: anywhere;
+}
+
+.equipmentTooltipStats dd {
+    color: #bfdbfe;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.equipmentTooltipMutedRow {
+    color: #cbd5e1 !important;
+}
+
+.equipmentTooltipMutedRow dd {
+    color: #e5e7eb !important;
+}
+
+.equipmentTooltipOptions {
+    display: grid;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: #ffffff;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.equipmentTooltipOptions li {
+    overflow-wrap: anywhere;
+}
+
+.equipmentTooltipSoul {
+    margin: 0;
+    color: #e9d5ff;
+    font-size: 12px;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.equipmentTooltipPotentialTitle {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.potentialBadge {
+    display: inline-grid;
+    place-items: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.potentialLegendaryBadge {
+    background: #16a34a;
+}
+
+.potentialLegendaryTitle {
+    color: #16a34a !important;
+}
+
+.potentialUniqueBadge {
+    background: #ca8a04;
+}
+
+.potentialUniqueTitle {
+    color: #facc15 !important;
+}
+
+.potentialEpicBadge {
+    background: #9333ea;
+}
+
+.potentialEpicTitle {
+    color: #c084fc !important;
+}
+
+.potentialRareBadge {
+    background: #2563eb;
+}
+
+.potentialRareTitle {
+    color: #60a5fa !important;
+}
+
+.equipmentMeta,
+.equipmentOption,
+.emptyText {
+    margin: 4px 0 0;
+    color: #6b7280;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.equipmentOption {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    overflow-wrap: anywhere;
+}
+
+.optionLabel {
+    flex: 0 0 auto;
+    font-weight: 800;
+}
+
+.optionDivider {
+    flex: 0 0 auto;
+    color: #d1d5db;
+}
+
+.legendary {
+    color: #16a34a;
+}
+
+.unique {
+    color: #ca8a04;
+}
+
+.epic {
+    color: #9333ea;
+}
+
+.rare {
+    color: #2563eb;
+}
+
+@media (max-width: 720px) {
+    .page {
+        padding: 16px;
+    }
+
+    .contentGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        flex-direction: row;
+    }
+
+    .titleBlock {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .imageFrame {
+        width: 100%;
+        max-width: 220px;
+        height: auto;
+        aspect-ratio: 1;
+    }
+
+    .image {
+        width: 100%;
+        height: 100%;
+    }
+
+    .detailRow {
+        grid-template-columns: 1fr;
+    }
+
+    .detailKey {
+        border-right: 0;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .equipmentTooltip {
+        left: 0;
+        top: calc(100% + 8px);
+    }
+}

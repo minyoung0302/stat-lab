@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import {headers} from "next/headers";
 
 const BASE = "https://open.api.nexon.com/maplestory/v1"
 

@@ -6,11 +6,9 @@ import {useSyncExternalStore} from "react";
 import { usePathname } from "next/navigation";
 
 function subscribe(callback: () => void) {
-    // 다른 탭/창에서 localStorage 변경될 때
     const onStorage = () => callback();
     window.addEventListener("storage", onStorage);
 
-    // 같은 탭에서 변경 감지용 커스텀 이벤트
     const onLocal = () => callback();
     window.addEventListener("ms_name_change", onLocal as EventListener);
 
@@ -37,7 +35,7 @@ export default function SubNav() {
 
     const items = [
         { label: "분석", href: safeHref(`/${encodeURIComponent(name)}`) },
-        { label: "유니온", href: safeHref(`/union?name=${encodeURIComponent(name)}`) },
+        { label: "유니온 챔피언", href: safeHref(`/union?name=${encodeURIComponent(name)}`) },
         { label: "추천", href: safeHref(`/recommend?name=${encodeURIComponent(name)}`) },
     ];
 
