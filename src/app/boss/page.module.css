@@ -1,0 +1,286 @@
+.page {
+    display: grid;
+    gap: 18px;
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding-bottom: 28px;
+}
+
+.notice {
+    display: grid;
+    gap: 3px;
+    padding: 12px 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #f9fafb;
+}
+
+.filterWrap {
+    position: relative;
+    display: grid;
+    justify-items: end;
+}
+
+.filterToggle {
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #374151;
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1.25;
+    cursor: pointer;
+}
+
+.filterToggle:hover,
+.filterToggleActive {
+    border-color: #2563eb;
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.filterPanel {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 20;
+    display: grid;
+    gap: 10px;
+    width: min(420px, calc(100vw - 48px));
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 18px 42px rgba(17, 24, 39, 0.14);
+}
+
+.filterGroup {
+    display: grid;
+    gap: 6px;
+}
+
+.filterGroup h2 {
+    margin: 0;
+    color: #374151;
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1.35;
+}
+
+.filterButtons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.filterButtons button {
+    padding: 5px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.25;
+    cursor: pointer;
+}
+
+.filterButtons button:hover {
+    border-color: #93c5fd;
+    color: #1d4ed8;
+}
+
+.filterButtons .filterButtonActive {
+    border-color: #2563eb;
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.searchPanel {
+    display: grid;
+    justify-items: center;
+    gap: 14px;
+    width: 100%;
+    max-width: 720px;
+    min-height: calc(100vh - 180px);
+    margin: 0 auto;
+    align-content: center;
+    padding: 28px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+    text-align: center;
+}
+
+.searchPanel h1 {
+    margin: 0;
+    color: #111827;
+    font-size: 24px;
+    line-height: 1.3;
+}
+
+.searchPanel p {
+    margin: 0;
+    color: #dc2626;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.45;
+}
+
+.searchBox {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    width: min(100%, 520px);
+    padding: 6px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+}
+
+.searchBox input {
+    min-width: 0;
+    padding: 11px 12px;
+    border: 0;
+    outline: none;
+    color: #111827;
+    font-size: 15px;
+}
+
+.searchBox button {
+    padding: 0 16px;
+    border: 0;
+    border-radius: 6px;
+    background: #111827;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.notice p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.section {
+    display: grid;
+    gap: 12px;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.section h2 {
+    margin: 0;
+    color: #111827;
+    font-size: 18px;
+    line-height: 1.35;
+}
+
+.bossGrid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.bossCard {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+    padding: 8px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+    text-align: center;
+}
+
+.bossImagePlaceholder {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    aspect-ratio: 16 / 8;
+    border: 1px dashed #cbd5e1;
+    border-radius: 7px;
+    background: #f8fafc;
+}
+
+.bossImagePlaceholder span {
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.bossCard strong {
+    color: #111827;
+    font-size: 13px;
+    line-height: 1.35;
+}
+
+.difficulty {
+    color: #6b7280;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+.rate {
+    color: #2563eb;
+    font-size: 16px;
+    font-weight: 900;
+    line-height: 1.2;
+}
+
+.judgement {
+    color: #374151;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.emptyState {
+    padding: 28px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.5;
+    text-align: center;
+}
+
+@media (max-width: 980px) {
+    .bossGrid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .filterWrap {
+        justify-items: stretch;
+    }
+
+    .sectionHeader {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .filterPanel {
+        position: static;
+        width: 100%;
+        margin-top: 8px;
+    }
+
+    .bossGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}

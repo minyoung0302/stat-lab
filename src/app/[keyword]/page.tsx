@@ -1,20 +1,8 @@
 import Image from "next/image";
-import CharacterTabs from "@/components/CharacterTabs";
+import CharacterTabs, {LinkSkillSection, SymbolSection} from "@/components/CharacterTabs";
 import styles from "@/components/CharacterInfo.module.css";
 
 type Props = { params: Promise<{ keyword: string }> };
-
-const fieldLabels: Record<string, string> = {
-    character_name: "캐릭터명",
-    world_name: "월드",
-    character_gender: "성별",
-    character_class: "직업",
-    character_level: "레벨",
-    character_exp: "경험치",
-    character_exp_rate: "경험치 비율",
-    character_popularity: "인기도",
-    character_guild_name: "길드",
-};
 
 function formatValue(value: unknown) {
     if (value === null || value === undefined || value === "") {
@@ -32,6 +20,66 @@ function formatValue(value: unknown) {
     return String(value);
 }
 
+function findStatValue(data: unknown, labels: string[]) {
+    const statItems = getArray(data, ["final_stat"]);
+
+    for (const label of labels) {
+        const found = statItems.find((item) => {
+            return formatValue(item.stat_name).replaceAll(" ", "") === label.replaceAll(" ", "");
+        });
+
+        if (found) {
+            return formatValue(found.stat_value);
+        }
+    }
+
+    return "-";
+}
+
+function formatKoreanUnit(value: unknown) {
+    const raw = formatValue(value).replaceAll(",", "");
+    const number = Number(raw);
+
+    if (!Number.isFinite(number)) {
+        return formatValue(value);
+    }
+
+    const eok = Math.floor(number / 100000000);
+    const man = Math.floor((number % 100000000) / 10000);
+    const rest = number % 10000;
+    const parts = [];
+
+    if (eok > 0) {
+        parts.push(`${eok.toLocaleString("ko-KR")}억`);
+    }
+
+    if (man > 0) {
+        parts.push(`${man.toLocaleString("ko-KR")}만`);
+    }
+
+    if (rest > 0 || parts.length === 0) {
+        parts.push(rest.toLocaleString("ko-KR"));
+    }
+
+    return parts.join(" ");
+}
+
+function dojangSummary(data: unknown) {
+    if (!data || typeof data !== "object") {
+        return "-";
+    }
+
+    const record = data as Record<string, unknown>;
+    const floor = formatValue(record.dojang_best_floor);
+    const time = formatValue(record.dojang_best_time);
+
+    if (floor === "-") {
+        return "-";
+    }
+
+    return time === "-" ? `${floor}층` : `${floor}층 / ${time}초`;
+}
+
 function getArray(data: unknown, keys: string[]) {
     if (!data || typeof data !== "object") {
         return [];
@@ -46,197 +94,6 @@ function getArray(data: unknown, keys: string[]) {
     }
 
     return [];
-}
-
-function readableKey(key: string) {
-    return key
-        .replaceAll("_", " ")
-        .replace(/\b\w/g, (char) => char.toUpperCase());
-}
-
-function shouldShowInfoField(key: string, value: unknown) {
-    if (value === null || value === undefined || value === "") {
-        return false;
-    }
-
-    const normalizedKey = key.toLowerCase();
-
-    return !normalizedKey.includes("description") && !normalizedKey.includes("icon");
-}
-
-function InfoCardSection({
-    title,
-    items,
-    emptyText,
-}: {
-    title: string;
-    items: Record<string, unknown>[];
-    emptyText: string;
-}) {
-    return (
-        <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>{title}</h2>
-
-            {items.length > 0 ? (
-                <div className={styles.compactGrid}>
-                    {items.map((item, index) => {
-                        const entries = Object.entries(item).filter(([key, value]) => {
-                            return shouldShowInfoField(key, value);
-                        });
-                        const titleEntry = entries.find(([key]) => {
-                            return key.endsWith("_name") || key.includes("name");
-                        });
-                        const iconEntry = Object.entries(item).find(([key, value]) => {
-                            return key.toLowerCase().includes("icon") && formatValue(value) !== "-";
-                        });
-                        const iconUrl = iconEntry ? formatValue(iconEntry[1]) : "";
-
-                        return (
-                            <article key={index} className={styles.compactCard}>
-                                {iconUrl && (
-                                    <div className={styles.compactIconBox}>
-                                        <Image
-                                            src={iconUrl}
-                                            alt={titleEntry ? formatValue(titleEntry[1]) : title}
-                                            width={40}
-                                            height={40}
-                                            unoptimized
-                                            className={styles.compactIcon}
-                                        />
-                                    </div>
-                                )}
-
-                                {titleEntry && (
-                                    <strong className={styles.compactTitle}>
-                                        {formatValue(titleEntry[1])}
-                                    </strong>
-                                )}
-
-                                <dl className={styles.compactDetails}>
-                                    {entries.map(([key, value]) => {
-                                        if (key === titleEntry?.[0]) {
-                                            return null;
-                                        }
-
-                                        return (
-                                            <div key={key} className={styles.compactRow}>
-                                                <dt>{readableKey(key)}</dt>
-                                                <dd>{formatValue(value)}</dd>
-                                            </div>
-                                        );
-                                    })}
-                                </dl>
-                            </article>
-                        );
-                    })}
-                </div>
-            ) : (
-                <p className={styles.emptyText}>{emptyText}</p>
-            )}
-        </section>
-    );
-}
-
-function SymbolSection({items}: {items: Record<string, unknown>[]}) {
-    return (
-        <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>장착 심볼</h2>
-
-            {items.length > 0 ? (
-                <div className={styles.symbolGrid}>
-                    {items.map((symbol, index) => {
-                        const name = formatValue(symbol.symbol_name);
-                        const icon = formatValue(symbol.symbol_icon);
-                        const level = formatValue(symbol.symbol_level);
-                        const force = formatValue(symbol.symbol_force);
-
-                        return (
-                            <div key={`${name}-${index}`} className={styles.symbolItem}>
-                                <div className={styles.symbolIconBox}>
-                                    {icon !== "-" && (
-                                        <Image
-                                            src={icon}
-                                            alt={name}
-                                            width={42}
-                                            height={42}
-                                            unoptimized
-                                            className={styles.symbolIcon}
-                                        />
-                                    )}
-
-                                    <div className={styles.symbolTooltip}>
-                                        <strong>{name}</strong>
-                                        <span>포스 {force}</span>
-                                    </div>
-
-                                    <span className={styles.symbolLevel}>Lv.{level}</span>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            ) : (
-                <p className={styles.emptyText}>장착 심볼 정보가 없습니다.</p>
-            )}
-        </section>
-    );
-}
-
-function findField(item: Record<string, unknown>, includes: string[]) {
-    const entry = Object.entries(item).find(([key, value]) => {
-        const normalizedKey = key.toLowerCase();
-        return includes.every((part) => normalizedKey.includes(part)) && formatValue(value) !== "-";
-    });
-
-    return entry ? formatValue(entry[1]) : "-";
-}
-
-function LinkSkillSection({items}: {items: Record<string, unknown>[]}) {
-    return (
-        <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>장착 링크</h2>
-
-            {items.length > 0 ? (
-                <div className={styles.symbolGrid}>
-                    {items.map((skill, index) => {
-                        const name = formatValue(skill.skill_name) !== "-"
-                            ? formatValue(skill.skill_name)
-                            : findField(skill, ["name"]);
-                        const icon = formatValue(skill.skill_icon) !== "-"
-                            ? formatValue(skill.skill_icon)
-                            : findField(skill, ["icon"]);
-                        const effect = formatValue(skill.skill_effect) !== "-"
-                            ? formatValue(skill.skill_effect)
-                            : findField(skill, ["effect"]);
-
-                        return (
-                            <div key={`${name}-${index}`} className={styles.symbolItem}>
-                                <div className={styles.symbolIconBox}>
-                                    {icon !== "-" && (
-                                        <Image
-                                            src={icon}
-                                            alt={name}
-                                            width={42}
-                                            height={42}
-                                            unoptimized
-                                            className={styles.symbolIcon}
-                                        />
-                                    )}
-
-                                    <div className={styles.linkTooltip}>
-                                        <strong>{name}</strong>
-                                        <span>{effect}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            ) : (
-                <p className={styles.emptyText}>장착 링크 정보가 없습니다.</p>
-            )}
-        </section>
-    );
 }
 
 export default async function SearchResultPage({ params }: Props) {
@@ -282,7 +139,6 @@ export default async function SearchResultPage({ params }: Props) {
     const guild = basic.character_guild_name;
     const popularity = basic.character_popularity;
     const image = basic.character_image;
-    const basicEntries = Object.entries(basic).filter(([key]) => key in fieldLabels);
     const equipmentItems = characterData.itemEquipment?.item_equipment ?? [];
     const symbolItems = getArray(characterData.symbolEquipment, ["symbol"]);
     const linkSkillItems = getArray(characterData.linkSkill, [
@@ -297,78 +153,87 @@ export default async function SearchResultPage({ params }: Props) {
     ]);
     const unionChampionItems = getArray(characterData.unionChampion, ["union_champion"]);
     const unionChampionBadgeTotalItems = getArray(characterData.unionChampion, ["champion_badge_total_info"]);
+    const combatPower = formatKoreanUnit(findStatValue(characterData.characterStat, ["전투력"]));
+    const bossDamage = findStatValue(characterData.characterStat, ["보스 몬스터 데미지", "보스 데미지"]);
+    const ignoreDefense = findStatValue(characterData.characterStat, ["방어율 무시"]);
+    const criticalDamage = findStatValue(characterData.characterStat, ["크리티컬 데미지"]);
+    const dojang = dojangSummary(characterData.dojang);
 
     return (
         <main className={styles.page}>
-            <div className={styles.contentGrid}>
-                <div className={styles.leftColumn}>
-                    <div className={styles.card}>
-                        {image && (
-                            <div className={styles.imageFrame}>
-                                <Image
-                                    src={image}
-                                    alt={characterName}
-                                    width={260}
-                                    height={260}
-                                    unoptimized
-                                    className={styles.image}
-                                />
-                            </div>
-                        )}
+            <section className={styles.characterHero}>
+                {image && (
+                    <div className={styles.heroImageFrame}>
+                        <Image
+                            src={image}
+                            alt={characterName}
+                            width={260}
+                            height={260}
+                            unoptimized
+                            className={styles.heroImage}
+                        />
+                    </div>
+                )}
 
-                        <div className={styles.info}>
-                            <div className={styles.titleBlock}>
-                                <div className={styles.nameRow}>
-                                    <h1 className={styles.name}>{characterName}</h1>
-                                    <span className={styles.worldTag}>
-                                        <span className={styles.worldBadge} aria-label={`${world} 월드`}>
-                                            {world?.slice(0, 1) ?? "?"}
-                                        </span>
-                                        <span className={styles.worldName}>{world}</span>
-                                    </span>
-                                </div>
-
-                                <p className={styles.summary}>
-                                    <span>Lv.{formatValue(level)}</span>
-                                    <span>{formatValue(job)}</span>
-                                    <span>인기도 {formatValue(popularity)}</span>
-                                    <span>{guild ? guild : "길드 없음"}</span>
-                                </p>
-                            </div>
-                        </div>
+                <div className={styles.heroMain}>
+                    <div className={styles.nameRow}>
+                        <h1 className={styles.name}>{characterName}</h1>
+                        <span className={styles.worldTag}>
+                            <span className={styles.worldBadge} aria-label={`${world} 월드`}>
+                                {world?.slice(0, 1) ?? "?"}
+                            </span>
+                            <span className={styles.worldName}>{world}</span>
+                        </span>
                     </div>
 
-                    <section className={styles.section}>
-                        <h2 className={styles.sectionTitle}>기본 정보 전체</h2>
-
-                        <dl className={styles.details}>
-                            {basicEntries.map(([key, value]) => (
-                                <div key={key} className={styles.detailRow}>
-                                    <dt className={styles.detailKey}>
-                                        {fieldLabels[key] ?? key}
-                                    </dt>
-                                    <dd className={styles.detailValue}>
-                                        {formatValue(value)}
-                                    </dd>
-                                </div>
-                            ))}
-                        </dl>
-                    </section>
-
-                    <SymbolSection items={symbolItems} />
-
-                    <LinkSkillSection items={linkSkillItems} />
-
+                    <p className={styles.summary}>
+                        <span>Lv.{formatValue(level)}</span>
+                        <span>{formatValue(job)}</span>
+                        <span>{guild ? guild : "길드 없음"}</span>
+                        <span>인기도 {formatValue(popularity)}</span>
+                    </p>
                 </div>
 
-                <CharacterTabs
-                    equipmentItems={equipmentItems}
-                    hexamatrixItems={hexamatrixItems}
-                    hexamatrixStatItems={hexamatrixStatItems}
-                    unionChampionItems={unionChampionItems}
-                    unionChampionBadgeTotalItems={unionChampionBadgeTotalItems}
-                />
-            </div>
+                <dl className={styles.heroMetrics}>
+                    <div>
+                        <dt>환산</dt>
+                        <dd>-</dd>
+                    </div>
+                    <div>
+                        <dt>전투력</dt>
+                        <dd>{combatPower}</dd>
+                    </div>
+                    <div>
+                        <dt>무릉</dt>
+                        <dd>{dojang}</dd>
+                    </div>
+                    <div>
+                        <dt>보스 배율</dt>
+                        <dd>{bossDamage}</dd>
+                    </div>
+                </dl>
+            </section>
+
+            <CharacterTabs
+                equipmentItems={equipmentItems}
+                characterStat={characterData.characterStat}
+                summaryStats={{
+                    combatPower,
+                    convertedStat: "-",
+                    bossDamage,
+                    ignoreDefense,
+                    criticalDamage,
+                }}
+                hexamatrixItems={hexamatrixItems}
+                hexamatrixStatItems={hexamatrixStatItems}
+                unionChampionItems={unionChampionItems}
+                unionChampionBadgeTotalItems={unionChampionBadgeTotalItems}
+            />
+
+            <section className={styles.characterSupport}>
+                <SymbolSection items={symbolItems} />
+                <LinkSkillSection items={linkSkillItems} />
+            </section>
         </main>
     );
 }

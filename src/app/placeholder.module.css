@@ -1,0 +1,35 @@
+.placeholder {
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 900px;
+    min-height: calc(100vh - 140px);
+    margin: 0 auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+    text-align: center;
+}
+
+.placeholder span {
+    color: #2563eb;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0;
+}
+
+.placeholder h1 {
+    margin: 0;
+    color: #111827;
+    font-size: 28px;
+    line-height: 1.25;
+}
+
+.placeholder p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.5;
+}

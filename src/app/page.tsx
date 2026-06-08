@@ -8,9 +8,9 @@ import styles from "@/app/page.module.css";
 const recentStorageKey = "maple_lab_recent_searches";
 
 const quickLinks = [
-    {label: "장비 분석", mark: "EQ"},
-    {label: "HEXA", mark: "HX"},
-    {label: "유니온 챔피언", mark: "UC"},
+    {label: "캐릭터정보", href: "/?view=character", mark: "CH"},
+    {label: "보스 배율", href: "/boss", mark: "BS"},
+    {label: "랭킹", href: "/ranking", mark: "RK"},
 ];
 
 function readRecentSearches() {
@@ -67,7 +67,7 @@ export default function Home() {
             <section className={styles.searchPanel}>
                 <div className={styles.brandMark}>ML</div>
                 <h1>캐릭터 분석을 시작하세요</h1>
-                <p>장비, HEXA, 유니온 챔피언 정보를 한 번에 확인합니다.</p>
+                <p>캐릭터정보를 검색하고 보스 배율, 랭킹 화면으로 확장합니다.</p>
 
                 <div className={styles.searchBox}>
                     <input
@@ -91,10 +91,10 @@ export default function Home() {
 
             <section className={styles.quickGrid} aria-label="주요 기능">
                 {quickLinks.map((item) => (
-                    <div key={item.label} className={styles.quickItem}>
+                    <Link key={item.label} href={item.href} className={styles.quickItem}>
                         <span>{item.mark}</span>
                         <strong>{item.label}</strong>
-                    </div>
+                    </Link>
                 ))}
             </section>
 
@@ -111,6 +111,7 @@ export default function Home() {
                                 key={name}
                                 href={`/${encodeURIComponent(name)}`}
                                 className={styles.recentItem}
+                                onClick={() => writeRecentSearches(name)}
                             >
                                 {name}
                             </Link>

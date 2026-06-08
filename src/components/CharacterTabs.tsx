@@ -29,6 +29,28 @@ function compactValues(values: unknown[]) {
         .filter((value) => value !== "-");
 }
 
+function finalStatValue(data: unknown, labels: string[]) {
+    const record = asRecord(data);
+    const stats = Array.isArray(record?.final_stat) ? record.final_stat : [];
+
+    for (const label of labels) {
+        const found = stats.find((item) => {
+            if (!item || typeof item !== "object") {
+                return false;
+            }
+
+            const statName = formatValue((item as Item).stat_name).replaceAll(" ", "");
+            return statName === label.replaceAll(" ", "");
+        });
+
+        if (found && typeof found === "object") {
+            return formatValue((found as Item).stat_value);
+        }
+    }
+
+    return "-";
+}
+
 function asRecord(value: unknown) {
     if (!value || typeof value !== "object" || Array.isArray(value)) {
         return null;
@@ -395,9 +417,9 @@ function EquipmentTooltip({
                 {cuttableCount !== "-" && (
                     <p className={styles.equipmentTooltipRecovery}>가위 사용 가능 횟수 : {cuttableCount}</p>
                 )}
-                {goldenHammerFlag !== "-" && (
-                    <p className={styles.equipmentTooltipRecovery}>황금망치 : {goldenHammerFlag}</p>
-                )}
+                {/*{goldenHammerFlag !== "-" && (*/}
+                {/*    <p className={styles.equipmentTooltipRecovery}>황금망치 : {goldenHammerFlag}</p>*/}
+                {/*)}*/}
                 {starforceScrollFlag !== "-" && (
                     <p className={styles.equipmentTooltipRecovery}>스타포스 강화 : {starforceScrollFlag}</p>
                 )}
@@ -586,6 +608,175 @@ function EquipmentList({items}: {items: Item[]}) {
     );
 }
 
+function findField(item: Item, includes: string[]) {
+    const entry = Object.entries(item).find(([key, value]) => {
+        const normalizedKey = key.toLowerCase();
+        return includes.every((part) => normalizedKey.includes(part)) && formatValue(value) !== "-";
+    });
+
+    return entry ? formatValue(entry[1]) : "-";
+}
+
+export function SymbolSection({items}: {items: Item[]}) {
+    return (
+        <section className={styles.sidebarSection}>
+            <h2 className={styles.sectionTitle}>장착 심볼</h2>
+
+            {items.length > 0 ? (
+                <div className={styles.symbolGrid}>
+                    {items.map((symbol, index) => {
+                        const name = formatValue(symbol.symbol_name);
+                        const icon = formatValue(symbol.symbol_icon);
+                        const level = formatValue(symbol.symbol_level);
+                        const force = formatValue(symbol.symbol_force);
+
+                        return (
+                            <div key={`${name}-${index}`} className={styles.symbolItem}>
+                                <div className={styles.symbolIconBox}>
+                                    {icon !== "-" && (
+                                        <Image
+                                            src={icon}
+                                            alt={name}
+                                            width={42}
+                                            height={42}
+                                            unoptimized
+                                            className={styles.symbolIcon}
+                                        />
+                                    )}
+
+                                    <div className={styles.symbolTooltip}>
+                                        <strong>{name}</strong>
+                                        <span>포스 {force}</span>
+                                    </div>
+
+                                    <span className={styles.symbolLevel}>Lv.{level}</span>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            ) : (
+                <p className={styles.emptyText}>장착 심볼 정보가 없습니다.</p>
+            )}
+        </section>
+    );
+}
+
+export function LinkSkillSection({items}: {items: Item[]}) {
+    return (
+        <section className={styles.sidebarSection}>
+            <h2 className={styles.sectionTitle}>장착 링크</h2>
+
+            {items.length > 0 ? (
+                <div className={styles.symbolGrid}>
+                    {items.map((skill, index) => {
+                        const name = formatValue(skill.skill_name) !== "-"
+                            ? formatValue(skill.skill_name)
+                            : findField(skill, ["name"]);
+                        const icon = formatValue(skill.skill_icon) !== "-"
+                            ? formatValue(skill.skill_icon)
+                            : findField(skill, ["icon"]);
+                        const effect = formatValue(skill.skill_effect) !== "-"
+                            ? formatValue(skill.skill_effect)
+                            : findField(skill, ["effect"]);
+
+                        return (
+                            <div key={`${name}-${index}`} className={styles.symbolItem}>
+                                <div className={styles.symbolIconBox}>
+                                    {icon !== "-" && (
+                                        <Image
+                                            src={icon}
+                                            alt={name}
+                                            width={42}
+                                            height={42}
+                                            unoptimized
+                                            className={styles.symbolIcon}
+                                        />
+                                    )}
+
+                                    <div className={styles.linkTooltip}>
+                                        <strong>{name}</strong>
+                                        <span>{effect}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            ) : (
+                <p className={styles.emptyText}>장착 링크 정보가 없습니다.</p>
+            )}
+        </section>
+    );
+}
+
+function StatSummary({
+    characterStat,
+    summaryStats,
+}: {
+    characterStat: unknown;
+    summaryStats: {
+        combatPower: string;
+        convertedStat: string;
+        bossDamage: string;
+        ignoreDefense: string;
+        criticalDamage: string;
+    };
+}) {
+    const rows = [
+        {label: "전투력", value: summaryStats.combatPower},
+        {label: "환산", value: summaryStats.convertedStat},
+        {label: "STR", value: finalStatValue(characterStat, ["STR"])},
+        {label: "DEX", value: finalStatValue(characterStat, ["DEX"])},
+        {label: "INT", value: finalStatValue(characterStat, ["INT"])},
+        {label: "LUK", value: finalStatValue(characterStat, ["LUK"])},
+        {label: "보공", value: summaryStats.bossDamage},
+        {label: "방무", value: summaryStats.ignoreDefense},
+        {label: "크뎀", value: summaryStats.criticalDamage},
+    ];
+
+    return (
+        <aside className={styles.statSummary}>
+            <h2 className={styles.sectionTitle}>스탯 요약</h2>
+            <dl className={styles.statSummaryList}>
+                {rows.map((row) => (
+                    <div key={row.label}>
+                        <dt>{row.label}</dt>
+                        <dd>{row.value}</dd>
+                    </div>
+                ))}
+            </dl>
+        </aside>
+    );
+}
+
+function EquipmentPanel({
+    equipmentItems,
+    characterStat,
+    summaryStats,
+}: {
+    equipmentItems: Item[];
+    characterStat: unknown;
+    summaryStats: {
+        combatPower: string;
+        convertedStat: string;
+        bossDamage: string;
+        ignoreDefense: string;
+        criticalDamage: string;
+    };
+}) {
+    return (
+        <div className={styles.equipmentDashboard}>
+            <StatSummary characterStat={characterStat} summaryStats={summaryStats} />
+
+            <section className={styles.equipmentDashboardMain}>
+                <h2 className={styles.sectionTitle}>장비 정보</h2>
+                <EquipmentList items={equipmentItems} />
+            </section>
+        </div>
+    );
+}
+
 function getStatList(value: unknown) {
     if (!Array.isArray(value)) {
         return [];
@@ -674,12 +865,22 @@ function UnionChampionList({
 
 export default function CharacterTabs({
     equipmentItems,
+    characterStat,
+    summaryStats,
     hexamatrixItems,
     hexamatrixStatItems,
     unionChampionItems,
     unionChampionBadgeTotalItems,
 }: {
     equipmentItems: Item[];
+    characterStat: unknown;
+    summaryStats: {
+        combatPower: string;
+        convertedStat: string;
+        bossDamage: string;
+        ignoreDefense: string;
+        criticalDamage: string;
+    };
     hexamatrixItems: Item[];
     hexamatrixStatItems: Item[];
     unionChampionItems: Item[];
@@ -713,7 +914,13 @@ export default function CharacterTabs({
                 </button>
             </div>
 
-            {activeTab === "equipment" && <EquipmentList items={equipmentItems} />}
+            {activeTab === "equipment" && (
+                <EquipmentPanel
+                    equipmentItems={equipmentItems}
+                    characterStat={characterStat}
+                    summaryStats={summaryStats}
+                />
+            )}
             {activeTab === "hexa" && (
                 <div className={styles.tabPanelStack}>
                     <div>
