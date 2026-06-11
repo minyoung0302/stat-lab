@@ -159,6 +159,73 @@
     cursor: pointer;
 }
 
+.loadingPanel {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: min(100%, 560px);
+    margin: 90px auto 0;
+    padding: 20px;
+    border: 1px solid #dbeafe;
+    border-radius: 8px;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    box-shadow: 0 18px 42px rgba(17, 24, 39, 0.08);
+}
+
+.loadingMark {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    flex: 0 0 auto;
+    border-radius: 8px;
+    background: #eff6ff;
+}
+
+.loadingMark span {
+    width: 22px;
+    height: 22px;
+    border: 3px solid #bfdbfe;
+    border-top-color: #2563eb;
+    border-radius: 999px;
+    animation: bossLoadingSpin 0.8s linear infinite;
+}
+
+.loadingPanel div:last-child {
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+}
+
+.loadingPanel p {
+    margin: 0;
+    color: #2563eb;
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1.35;
+}
+
+.loadingPanel h1 {
+    margin: 0;
+    color: #111827;
+    font-size: 22px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+.loadingPanel div:last-child > span {
+    color: #6b7280;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+@keyframes bossLoadingSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .notice p {
     margin: 0;
     color: #6b7280;

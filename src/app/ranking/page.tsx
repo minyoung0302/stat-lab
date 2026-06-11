@@ -11,7 +11,7 @@ type CharacterPreview = {
 };
 
 const rankingTabs: {type: RankingType; label: string; description: string}[] = [
-    {type: "overall", label: "종합", description: "레벨과 경험치 기준 캐릭터 랭킹"},
+    {type: "overall", label: "종합", description: "레벨 기준 캐릭터 랭킹"},
     {type: "union", label: "유니온", description: "유니온 레벨 기준 랭킹"},
     {type: "guild", label: "길드", description: "월드별 길드 랭킹"},
     {type: "dojang", label: "무릉도장", description: "무릉 층수와 기록 기준 랭킹"},
@@ -91,12 +91,9 @@ function rankingMeta(type: RankingType, item: RankingItem) {
 
 function rankingMainStat(type: RankingType, item: RankingItem) {
     if (type === "overall") {
-        const exp = pick(item, ["character_exp"]);
-        const popularity = pick(item, ["character_popularity"]);
-
         return {
-            label: "경험치 / 인기도",
-            value: popularity === "-" ? exp : `${exp} / ${popularity}`,
+            label: "인기도",
+            value: pick(item, ["character_popularity"]),
         };
     }
 

@@ -288,7 +288,7 @@ export default function Home() {
 
                                 return (
                                     <li key={`${name}-${index}`}>
-                                        <Link href="/ranking">
+                                        <Link href={`/${encodeURIComponent(name)}`}>
                                             <span>{formatValue(item.ranking)}</span>
                                             <strong>{name}</strong>
                                             <em>{world} · {job} · Lv.{level}</em>

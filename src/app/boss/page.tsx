@@ -549,8 +549,15 @@ export default function BossPage() {
     if (status === "loading") {
         return (
             <main className={styles.page}>
-                <section className={styles.searchPanel}>
-                    <h1>{characterName || "캐릭터"} 정보를 불러오는 중입니다.</h1>
+                <section className={styles.loadingPanel}>
+                    <div className={styles.loadingMark}>
+                        <span />
+                    </div>
+                    <div>
+                        <p>보스 배율 계산 준비 중</p>
+                        <h1>{characterName || "캐릭터"}</h1>
+                        <span>캐릭터 기본 정보와 능력치 데이터를 불러오고 있습니다.</span>
+                    </div>
                 </section>
             </main>
         );
