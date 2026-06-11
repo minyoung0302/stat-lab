@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {usePathname, useRouter, useSearchParams} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import {useEffect, useState} from "react";
 
 const recentStorageKey = "maple_lab_recent_searches";
@@ -43,9 +43,9 @@ function writeSearchName(name: string) {
 export default function Header() {
     const router = useRouter();
     const pathname = usePathname();
-    const searchParams = useSearchParams();
     const [query, setQuery] = useState("");
     const [storedName, setStoredName] = useState("");
+    const [currentSearch, setCurrentSearch] = useState("");
 
     useEffect(() => {
         const updateStoredName = () => setStoredName(readStoredName());
@@ -60,9 +60,13 @@ export default function Header() {
         };
     }, []);
 
+    useEffect(() => {
+        setCurrentSearch(window.location.search);
+    }, [pathname]);
+
     const characterHref = storedName ? `/${encodeURIComponent(storedName)}` : "/?view=character";
     const isCharacterRoute = pathname !== "/" && pathname !== "/boss" && pathname !== "/ranking";
-    const isCharacterSearchView = pathname === "/" && searchParams.get("view") === "character";
+    const isCharacterSearchView = pathname === "/" && new URLSearchParams(currentSearch).get("view") === "character";
 
     const navItems = [
         {label: "캐릭터정보", href: characterHref, active: isCharacterRoute || isCharacterSearchView},

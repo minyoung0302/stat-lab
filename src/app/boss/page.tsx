@@ -98,6 +98,13 @@ function formatValue(value: unknown) {
     return String(value);
 }
 
+function normalizeStatName(value: unknown) {
+    return formatValue(value)
+        .replaceAll(" ", "")
+        .replaceAll("%", "")
+        .toLowerCase();
+}
+
 function getArray(data: unknown, keys: string[]) {
     if (!data || typeof data !== "object") {
         return [];
@@ -115,16 +122,33 @@ function getArray(data: unknown, keys: string[]) {
 }
 
 function findStatValue(data: unknown, labels: string[]) {
-    const statItems = getArray(data, ["final_stat"]);
+    const statItems = Array.isArray(data) ? data : getArray(data, ["final_stat"]);
+    const normalizedLabels = labels.map(normalizeStatName);
 
     for (const label of labels) {
         const found = statItems.find((item) => {
-            return formatValue(item.stat_name).replaceAll(" ", "") === label.replaceAll(" ", "");
+            const statName = normalizeStatName(item.stat_name);
+            const normalizedLabel = normalizeStatName(label);
+
+            return statName === normalizedLabel || statName.includes(normalizedLabel);
         });
 
         if (found) {
-            return formatValue(found.stat_value);
+            const value = formatValue(found.stat_value);
+
+            if (value !== "-") {
+                return value;
+            }
         }
+    }
+
+    const found = statItems.find((item) => {
+        const statName = normalizeStatName(item.stat_name);
+        return normalizedLabels.some((label) => statName.includes(label));
+    });
+
+    if (found) {
+        return formatValue(found.stat_value);
     }
 
     return "-";
@@ -566,7 +590,7 @@ export default function BossPage() {
             {characterData && <CharacterHero data={characterData} />}
 
             <section className={styles.notice}>
-                <p>본 수치는 Maple Lab 자체 딜 지표입니다.</p>
+                <p>본 수치는 Maple Lab 자체 딜 지표입니다. (기준 : 주인장 캐릭터 - 환산6만 칼리)</p>
                 <p>15분 클리어 기준을 바탕으로 보스별 예상 배율과 클리어 시간을 제공합니다.</p>
                 <p>직업, 숙련도, 시드링, 극딜 구조, 보스 패턴에 따라 실제 결과와 차이가 날 수 있습니다.</p>
             </section>

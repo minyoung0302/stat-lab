@@ -20,17 +20,41 @@ function formatValue(value: unknown) {
     return String(value);
 }
 
+function normalizeStatName(value: unknown) {
+    return formatValue(value)
+        .replaceAll(" ", "")
+        .replaceAll("%", "")
+        .toLowerCase();
+}
+
 function findStatValue(data: unknown, labels: string[]) {
-    const statItems = getArray(data, ["final_stat"]);
+    const statItems = Array.isArray(data) ? data : getArray(data, ["final_stat"]);
+    const normalizedLabels = labels.map(normalizeStatName);
 
     for (const label of labels) {
         const found = statItems.find((item) => {
-            return formatValue(item.stat_name).replaceAll(" ", "") === label.replaceAll(" ", "");
+            const statName = normalizeStatName(item.stat_name);
+            const normalizedLabel = normalizeStatName(label);
+
+            return statName === normalizedLabel || statName.includes(normalizedLabel);
         });
 
         if (found) {
-            return formatValue(found.stat_value);
+            const value = formatValue(found.stat_value);
+
+            if (value !== "-") {
+                return value;
+            }
         }
+    }
+
+    const found = statItems.find((item) => {
+        const statName = normalizeStatName(item.stat_name);
+        return normalizedLabels.some((label) => statName.includes(label));
+    });
+
+    if (found) {
+        return formatValue(found.stat_value);
     }
 
     return "-";

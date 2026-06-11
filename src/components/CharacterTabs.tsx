@@ -29,9 +29,34 @@ function compactValues(values: unknown[]) {
         .filter((value) => value !== "-");
 }
 
-function finalStatValue(data: unknown, labels: string[]) {
+function normalizeStatName(value: unknown) {
+    return formatValue(value)
+        .replaceAll(" ", "")
+        .replaceAll("%", "")
+        .toLowerCase();
+}
+
+function statItems(data: unknown) {
+    if (Array.isArray(data)) {
+        return data;
+    }
+
     const record = asRecord(data);
-    const stats = Array.isArray(record?.final_stat) ? record.final_stat : [];
+
+    if (!record) {
+        return [];
+    }
+
+    if (Array.isArray(record.final_stat)) {
+        return record.final_stat;
+    }
+
+    return Object.values(record).find(Array.isArray) ?? [];
+}
+
+function finalStatValue(data: unknown, labels: string[]) {
+    const stats = statItems(data);
+    const normalizedLabels = labels.map(normalizeStatName);
 
     for (const label of labels) {
         const found = stats.find((item) => {
@@ -39,16 +64,49 @@ function finalStatValue(data: unknown, labels: string[]) {
                 return false;
             }
 
-            const statName = formatValue((item as Item).stat_name).replaceAll(" ", "");
-            return statName === label.replaceAll(" ", "");
+            const statName = normalizeStatName((item as Item).stat_name);
+            const normalizedLabel = normalizeStatName(label);
+
+            return statName === normalizedLabel || statName.includes(normalizedLabel);
         });
 
         if (found && typeof found === "object") {
-            return formatValue((found as Item).stat_value);
+            const value = formatValue((found as Item).stat_value);
+
+            if (value !== "-") {
+                return value;
+            }
         }
     }
 
+    const found = stats.find((item) => {
+        if (!item || typeof item !== "object") {
+            return false;
+        }
+
+        const statName = normalizeStatName((item as Item).stat_name);
+        return normalizedLabels.some((label) => statName.includes(label));
+    });
+
+    if (found && typeof found === "object") {
+        return formatValue((found as Item).stat_value);
+    }
+
     return "-";
+}
+
+function fallbackStatRows(data: unknown) {
+    return statItems(data)
+        .filter((item) => item && typeof item === "object")
+        .map((item) => {
+            const record = item as Item;
+            return {
+                label: formatValue(record.stat_name),
+                value: formatValue(record.stat_value),
+            };
+        })
+        .filter((row) => row.label !== "-" && row.value !== "-")
+        .slice(0, 10);
 }
 
 function asRecord(value: unknown) {
@@ -436,8 +494,8 @@ function EquipmentTooltip({
                         잠재 옵션
                     </h3>
                     <ul className={styles.equipmentTooltipOptions}>
-                        {potentials.map((option) => (
-                            <li key={option}>{option}</li>
+                        {potentials.map((option, index) => (
+                            <li key={`potential-${index}-${option}`}>{option}</li>
                         ))}
                     </ul>
                 </div>
@@ -454,8 +512,8 @@ function EquipmentTooltip({
                         에디셔널 잠재 옵션
                     </h3>
                     <ul className={styles.equipmentTooltipOptions}>
-                        {additionalPotentials.map((option) => (
-                            <li key={option}>{option}</li>
+                        {additionalPotentials.map((option, index) => (
+                            <li key={`additional-potential-${index}-${option}`}>{option}</li>
                         ))}
                     </ul>
                 </div>
@@ -726,26 +784,32 @@ function StatSummary({
     const rows = [
         {label: "전투력", value: summaryStats.combatPower},
         {label: "환산", value: summaryStats.convertedStat},
-        {label: "STR", value: finalStatValue(characterStat, ["STR"])},
-        {label: "DEX", value: finalStatValue(characterStat, ["DEX"])},
-        {label: "INT", value: finalStatValue(characterStat, ["INT"])},
-        {label: "LUK", value: finalStatValue(characterStat, ["LUK"])},
+        {label: "STR", value: finalStatValue(characterStat, ["STR", "스탯STR"])},
+        {label: "DEX", value: finalStatValue(characterStat, ["DEX", "스탯DEX"])},
+        {label: "INT", value: finalStatValue(characterStat, ["INT", "스탯INT"])},
+        {label: "LUK", value: finalStatValue(characterStat, ["LUK", "스탯LUK"])},
         {label: "보공", value: summaryStats.bossDamage},
         {label: "방무", value: summaryStats.ignoreDefense},
         {label: "크뎀", value: summaryStats.criticalDamage},
     ];
+    const shouldUseFallback = rows.every((row) => row.value === "-");
+    const displayRows = shouldUseFallback ? fallbackStatRows(characterStat) : rows;
 
     return (
         <aside className={styles.statSummary}>
             <h2 className={styles.sectionTitle}>스탯 요약</h2>
-            <dl className={styles.statSummaryList}>
-                {rows.map((row) => (
-                    <div key={row.label}>
-                        <dt>{row.label}</dt>
-                        <dd>{row.value}</dd>
-                    </div>
-                ))}
-            </dl>
+            {displayRows.length > 0 ? (
+                <dl className={styles.statSummaryList}>
+                    {displayRows.map((row) => (
+                        <div key={row.label}>
+                            <dt>{row.label}</dt>
+                            <dd>{row.value}</dd>
+                        </div>
+                    ))}
+                </dl>
+            ) : (
+                <p className={styles.emptyText}>스탯 정보가 없습니다.</p>
+            )}
         </aside>
     );
 }
