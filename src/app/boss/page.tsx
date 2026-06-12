@@ -1,9 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import styles from "@/app/boss/page.module.css";
 import characterStyles from "@/components/CharacterInfo.module.css";
+import {calculateBossAnalysis} from "@/utils/mapleDamageCalculator";
+import type {BossAnalysisResult, MapleFinalStat} from "@/types/mapleBossAnalysis";
 
 type BossCategory = "weekly" | "endgame" | "monthly";
 
@@ -21,6 +23,7 @@ type BossFilter = {
 };
 
 type CharacterData = Record<string, any>;
+type BossAnalysisMap = Record<string, BossAnalysisResult>;
 
 const recentStorageKey = "maple_lab_recent_searches";
 
@@ -72,15 +75,6 @@ const bosses: BossEntry[] = [
 const rateFilters = [30, 50, 75, 100];
 const bossNames = Array.from(new Set(bosses.map((boss) => boss.name)));
 const difficulties = ["이지", "노멀", "하드", "카오스", "익스트림"];
-
-function getBossJudgement(rate: number) {
-    if (rate >= 300) return "매우 여유";
-    if (rate >= 200) return "쾌적";
-    if (rate >= 150) return "안정";
-    if (rate >= 100) return "15분 내 가능";
-    if (rate >= 75) return "장기전 도전";
-    return "스펙 보강 권장";
-}
 
 function formatValue(value: unknown) {
     if (value === null || value === undefined || value === "") {
@@ -232,6 +226,22 @@ function writeSearchName(name: string) {
     window.dispatchEvent(new Event("ms_name_change"));
 }
 
+function readFinalStat(data: CharacterData | null): MapleFinalStat[] {
+    const finalStat = data?.characterStat?.final_stat;
+
+    if (!Array.isArray(finalStat)) {
+        return [];
+    }
+
+    return finalStat.filter((item): item is MapleFinalStat => {
+        return Boolean(
+            item
+            && typeof item === "object"
+            && typeof item.stat_name === "string"
+        );
+    });
+}
+
 function CharacterHero({data}: {data: CharacterData}) {
     const basic = data.basic ?? {};
     const characterName = basic.character_name;
@@ -340,8 +350,20 @@ function CharacterSearch({
     );
 }
 
-function getBossRate(_boss: BossEntry): number | null {
-    return null;
+function getBossRate(boss: BossEntry, analysisMap: BossAnalysisMap): number | null {
+    return analysisMap[boss.id]?.bossScore ?? null;
+}
+
+function formatBossRate(rate: number | null) {
+    if (rate === null) {
+        return "-%";
+    }
+
+    if (rate >= 1000) {
+        return `${Math.round(rate).toLocaleString("ko-KR")}%`;
+    }
+
+    return `${Math.round(rate * 10) / 10}%`;
 }
 
 function toggleValue(values: string[], value: string) {
@@ -438,8 +460,8 @@ function BossFilters({
     );
 }
 
-function BossCard({boss}: {boss: BossEntry}) {
-    const rate = getBossRate(boss);
+function BossCard({boss, analysis}: {boss: BossEntry; analysis?: BossAnalysisResult}) {
+    const rate = analysis?.bossScore ?? null;
 
     return (
         <article className={styles.bossCard}>
@@ -448,8 +470,8 @@ function BossCard({boss}: {boss: BossEntry}) {
             </div>
             <strong>{boss.name}</strong>
             <span className={styles.difficulty}>{boss.difficulty}</span>
-            <span className={styles.rate}>{rate === null ? "-%" : `${rate}%`}</span>
-            <span className={styles.judgement}>{rate === null ? "계산 준비중" : getBossJudgement(rate)}</span>
+            <span className={styles.rate}>{formatBossRate(rate)}</span>
+            <span className={styles.judgement}>{analysis ? analysis.gradeLabel : "계산 준비중"}</span>
         </article>
     );
 }
@@ -458,11 +480,13 @@ function BossSection({
     title,
     category,
     items,
+    analysisMap,
     action,
 }: {
     title: string;
     category: BossCategory;
     items: BossEntry[];
+    analysisMap: BossAnalysisMap;
     action?: React.ReactNode;
 }) {
     const sectionItems = items.filter((boss) => boss.category === category);
@@ -479,7 +503,7 @@ function BossSection({
             </div>
             <div className={styles.bossGrid}>
                 {sectionItems.map((boss) => (
-                    <BossCard key={boss.id} boss={boss} />
+                    <BossCard key={boss.id} boss={boss} analysis={analysisMap[boss.id]} />
                 ))}
             </div>
         </section>
@@ -535,6 +559,32 @@ export default function BossPage() {
         void loadCharacter(storedName);
     }, []);
 
+    const bossAnalysisMap = useMemo(() => {
+        if (!characterData) {
+            return {};
+        }
+
+        const basic = characterData.basic ?? {};
+        const finalStat = readFinalStat(characterData);
+        const characterName = formatValue(basic.character_name);
+        const jobName = formatValue(basic.character_class);
+
+        if (finalStat.length === 0 || jobName === "-") {
+            return {};
+        }
+
+        return bosses.reduce<BossAnalysisMap>((result, boss) => {
+            result[boss.id] = calculateBossAnalysis({
+                characterName,
+                jobName,
+                bossId: boss.id,
+                finalStat,
+            });
+
+            return result;
+        }, {});
+    }, [characterData]);
+
     if (status === "idle") {
         return (
             <main className={styles.page}>
@@ -575,7 +625,7 @@ export default function BossPage() {
     }
 
     const filteredBosses = bosses.filter((boss) => {
-        const rate = getBossRate(boss);
+        const rate = getBossRate(boss, bossAnalysisMap);
 
         if (filter.minRate !== null && (rate === null || rate < filter.minRate)) {
             return false;
@@ -608,6 +658,7 @@ export default function BossPage() {
                         title="주간 보스"
                         category="weekly"
                         items={filteredBosses}
+                        analysisMap={bossAnalysisMap}
                         action={(
                             <BossFilters
                                 filter={filter}
@@ -617,8 +668,18 @@ export default function BossPage() {
                             />
                         )}
                     />
-                    <BossSection title="상위 보스" category="endgame" items={filteredBosses} />
-                    <BossSection title="월간 보스" category="monthly" items={filteredBosses} />
+                    <BossSection
+                        title="상위 보스"
+                        category="endgame"
+                        items={filteredBosses}
+                        analysisMap={bossAnalysisMap}
+                    />
+                    <BossSection
+                        title="월간 보스"
+                        category="monthly"
+                        items={filteredBosses}
+                        analysisMap={bossAnalysisMap}
+                    />
                 </>
             ) : (
                 <section className={styles.emptyState}>

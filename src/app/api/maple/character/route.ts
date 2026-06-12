@@ -10,7 +10,7 @@ function shouldRetry(status: number) {
     return status === 429 || status >= 500;
 }
 
-async function nxfetch(url: string, retries = 2){
+async function nxfetch(url: string, retries = 2, retryDelay = 350){
     let lastError: unknown;
 
     for (let attempt = 0; attempt <= retries; attempt += 1) {
@@ -33,7 +33,7 @@ async function nxfetch(url: string, retries = 2){
             }
         }
 
-        await sleep(250 * (attempt + 1));
+        await sleep(retryDelay * (attempt + 1));
     }
 
     throw lastError;
@@ -47,9 +47,9 @@ async function readJson(res: Response) {
     }
 }
 
-async function fetchOptional(path: string, ocid: string, date?: string) {
+async function fetchOptional(path: string, ocid: string, date?: string, retries = 2, retryDelay = 350) {
     try {
-        const res = await nxfetch(characterUrl(path, ocid, date));
+        const res = await nxfetch(characterUrl(path, ocid, date), retries, retryDelay);
         const data = await readJson(res);
 
         return {
@@ -109,7 +109,10 @@ export async function GET(req: Request){
         return NextResponse.json({ocid, basic: basicData}, {status: basicRes.status});
     }
 
-    // 3)optional character details
+    // 3)Stat powers the top summary and boss pages, so fetch it before the noisier optional calls.
+    const characterStat = await fetchOptional("/character/stat", ocid, date, 5, 500);
+
+    // 4)optional character details
     const [
         itemEquipment,
         symbolEquipment,
@@ -117,7 +120,6 @@ export async function GET(req: Request){
         vmatrix,
         hexamatrix,
         hexamatrixStat,
-        characterStat,
         hyperStat,
         ability,
         dojang,
@@ -130,7 +132,6 @@ export async function GET(req: Request){
         fetchOptional("/character/vmatrix", ocid, date),
         fetchOptional("/character/hexamatrix", ocid, date),
         fetchOptional("/character/hexamatrix-stat", ocid, date),
-        fetchOptional("/character/stat", ocid, date),
         fetchOptional("/character/hyper-stat", ocid, date),
         fetchOptional("/character/ability", ocid, date),
         fetchOptional("/character/dojang", ocid, date),

@@ -794,6 +794,7 @@ function StatSummary({
     ];
     const shouldUseFallback = rows.every((row) => row.value === "-");
     const displayRows = shouldUseFallback ? fallbackStatRows(characterStat) : rows;
+    const hasStatSource = statItems(characterStat).length > 0;
 
     return (
         <aside className={styles.statSummary}>
@@ -808,7 +809,9 @@ function StatSummary({
                     ))}
                 </dl>
             ) : (
-                <p className={styles.emptyText}>스탯 정보가 없습니다.</p>
+                <p className={styles.emptyText}>
+                    {hasStatSource ? "표시할 스탯 정보가 없습니다." : "스탯 정보를 불러오지 못했습니다."}
+                </p>
             )}
         </aside>
     );
